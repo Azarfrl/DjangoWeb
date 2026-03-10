@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Text Collector</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; }
+        textarea { width: 100%; min-height: 120px; }
+        .note { border: 1px solid #ccc; padding: 15px; margin: 15px 0; border-radius: 8px; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>Submit Text</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+
+    <h2>Notes ({{ notes.count }})</h2>
+    {% for note in notes %}
+        <div class="note">
+            <small>{{ note.created_at }}</small><br>
+            {{ note.content|linebreaks }}
+            <br><small>{{ note.get_length_info }}</small>
+        </div>
+    {% empty %}
+        <p>No notes yet.</p>
+    {% endfor %}
+
+    <hr>
+    <small><a href="/admin/">Admin (superuser only)</a></small>
+</body>
+</html>
