@@ -16,7 +16,7 @@
         <p>Welcome, {{ user.username }}! <a href="{% url 'logout' %}">Logout</a></p>
         <h2>Your Notes ({{ notes.count }})</h2>
 
-        <form method="post" action="{% url 'add_note' %}">  <!-- submit goes to add_note view -->
+        <form method="post" action="{% url 'add_note' %}"> 
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Add Note</button>
