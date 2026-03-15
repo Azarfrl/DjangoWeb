@@ -4,32 +4,36 @@
     <meta charset="UTF-8">
     <title>Text Collector</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; }
-        textarea { width: 100%; min-height: 120px; }
+        body { font-family: Arial; max-width: 900px; margin: auto; padding: 20px; }
         .note { border: 1px solid #ccc; padding: 15px; margin: 15px 0; border-radius: 8px; background: #f9f9f9; }
+        textarea { width: 100%; min-height: 120px; }
     </style>
 </head>
 <body>
-    <h1>Submit Text</h1>
+    <h1>Text Collector</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save</button>
-    </form>
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }}! <a href="{% url 'logout' %}">Logout</a></p>
+        <h2>Your Notes ({{ notes.count }})</h2>
 
-    <h2>Notes ({{ notes.count }})</h2>
-    {% for note in notes %}
-        <div class="note">
-            <small>{{ note.created_at }}</small><br>
-            {{ note.content|linebreaks }}
-            <br><small>{{ note.get_length_info }}</small>
-        </div>
-    {% empty %}
-        <p>No notes yet.</p>
-    {% endfor %}
+        <form method="post" action="{% url 'add_note' %}">  <!-- submit goes to add_note view -->
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add Note</button>
+        </form>
 
-    <hr>
-    <small><a href="/admin/">Admin (superuser only)</a></small>
+        {% for note in notes %}
+            <div class="note">
+                <small>{{ note.created_at }}</small><br>
+                {{ note.content|linebreaks }}
+                <br><small>{{ note.get_length_info }}</small>
+            </div>
+        {% empty %}
+            <p>You have no notes yet. Add one above!</p>
+        {% endfor %}
+
+    {% else %}
+        <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a> to add and see your personal notes.</p>
+    {% endif %}
 </body>
 </html>
