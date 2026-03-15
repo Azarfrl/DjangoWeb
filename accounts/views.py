@@ -8,7 +8,7 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # auto-login after register
+            login(request, user)
             return redirect('home')
     else:
         form = UserCreationForm()
