@@ -8,8 +8,8 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # auto-login after register
-            return redirect('home')
+            login(request, user)
+            return redirect('dashboard')
     else:
         form = UserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
@@ -21,11 +21,11 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('dashboard')
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'accounts/login.html')
 
 def user_logout(request):
     logout(request)
-    return redirect('home')
+    return redirect('dashboard')

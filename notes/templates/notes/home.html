@@ -10,16 +10,26 @@
     </style>
 </head>
 <body>
+
     <h1>Unit Information</h1>
+
+    {% if subject %}
+        <h2>{{ subject.subject_name }} - Notepad</h2>
+        <p><strong>College:</strong> {{ subject.college_name }} | <strong>Teacher:</strong> {{ subject.teacher_name }}</p>
+        <a href="{% url 'dashboard' %}">← Back to All Subjects</a>
+        <hr>
+    {% else %}
+        <h1>Welcome, {{ user.username }}</h1>
+    {% endif %}
 
     {% if user.is_authenticated %}
         <p>Welcome, {{ user.username }}! <a href="{% url 'logout' %}">Logout</a></p>
         <h2>Your Notes ({{ notes.count }})</h2>
 
-        <form method="post" action="{% url 'add_note' %}">  <!-- submit goes to add_note view -->
+        <form method="post" action="{% url 'add_note' subject_id=subject.id %}">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Add Note</button>
+            <button type="submit">Add Note to this Subject</button>
         </form>
 
         {% for note in notes %}

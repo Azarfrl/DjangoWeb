@@ -1,0 +1,39 @@
+<h1>{{ subject.subject_name }} - Images</h1>
+<p><strong>College:</strong> {{ subject.college_name }} | <strong>Teacher:</strong> {{ subject.teacher_name }}</p>
+
+<div style="text-align: right; margin-bottom: 15px;">
+    <a href="{% url 'logout' %}" style="color: red; font-weight: bold;">Logout</a>
+</div>
+
+<a href="{% url 'dashboard' %}">← Back to Dashboard</a>
+
+<h3>Upload New Image</h3>
+<form method="post" enctype="multipart/form-data" 
+      action="{% url 'upload_image' subject_id=subject.id %}">
+    {% csrf_token %}
+    <input type="file" name="image" accept="image/png, image/jpeg, image/jpg" required>
+    <button type="submit">Upload Image</button>
+</form>
+
+<hr>
+
+<h3>Uploaded Images ({{ images.count }})</h3>
+{% for img in images %}
+    <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd;">
+        <a href="{{ img.image.url }}" target="_blank" rel="noopener">
+            🖼️ {{ img.image.name }}
+        </a>
+        <small> — Uploaded: {{ img.uploaded_at|date:"d M Y, H:i" }}</small>
+        
+        <form method="post" action="{% url 'delete_image' image_id=img.id %}" style="display:inline; margin-left: 20px;" 
+              onsubmit="return confirm('Delete this image?');">
+            {% csrf_token %}
+            <input type="hidden" name="image_id" value="{{ img.id }}">
+            <button type="submit" style="color: red; border: none; background: none; cursor: pointer;">
+                🗑️ Delete
+            </button>
+        </form>
+    </div>
+{% empty %}
+    <p>No images uploaded yet for this subject.</p>
+{% endfor %}
