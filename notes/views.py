@@ -101,6 +101,7 @@ def subject_notepad(request, subject_id):
 def delete_subject(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id, user=request.user)
     subject.delete()
+    return redirect('dashboard')
 
 @login_required
 def subject_images(request, subject_id):
