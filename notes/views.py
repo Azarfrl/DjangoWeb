@@ -40,20 +40,21 @@ def add_note(request, subject_id=None):
 def update_note(request, note_id):          
     note = get_object_or_404(Note, id=note_id, user=request.user)
     content = request.POST.get('content', '').strip()
-    if not content:
-        messages.error(request, "Note cannot be empty.")
+    if content:
+       note.content = content
+       note.save()
     else:
         note.content = content
         note.save()
         messages.success(request, "Note updated.")
-    return redirect('dashboard')
+    return redirect('subject_notepad')
 
 @login_required
 def delete_note(request, note_id):         
     note = get_object_or_404(Note, id=note_id, user=request.user)
     note.delete()
     messages.success(request, "Note deleted successfully.")
-    return redirect('dashboard')
+    return redirect('subject_notepad')
 
 @login_required
 def dashboard(request):
