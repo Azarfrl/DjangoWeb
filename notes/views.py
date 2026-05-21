@@ -46,29 +46,47 @@ def update_note(request, note_id):
         note.content = content
         note.save()
         messages.success(request, "Note updated.")
-    return redirect('dashboard')
-
+    
+    if note.subject:
+        return redirect('subject_notepad', subject_id=note.subject.id)
+    else:
+        return redirect('dashboard')
+    
 @login_required
 def delete_note(request, note_id):         
     note = get_object_or_404(Note, id=note_id, user=request.user)
     note.delete()
     messages.success(request, "Note deleted successfully.")
-    return redirect('dashboard')
+    subject_id = note.subject.id if note.subject else None
+   
+    if subject_id:
+        return redirect('subject_notepad', subject_id=subject_id)
+    else:
+        return redirect('dashboard')
 
 @login_required
 def dashboard(request):
     subjects = Subject.objects.filter(user=request.user).order_by('subject_name')
     
     if request.method == 'POST':
-        form = SubjectForm(request.POST)
-        if form.is_valid():
-            subject = form.save(commit=False)
-            subject.user = request.user
+        if 'add_subject' in request.POST:
+            form = SubjectForm(request.POST)
+            if form.is_valid():
+                subject = form.save(commit=False)
+                subject.user = request.user
+                subject.save()
+                return redirect('dashboard')
+        
+        elif 'edit_subject' in request.POST:
+            subject_id = request.POST.get('subject_id')
+            subject = get_object_or_404(Subject, id=subject_id, user=request.user)
+            subject.college_name = request.POST.get('college_name')
+            subject.subject_name = request.POST.get('subject_name')
+            subject.teacher_name = request.POST.get('teacher_name')
             subject.save()
             return redirect('dashboard')
-    else:
-        form = SubjectForm()
-
+    
+    form = SubjectForm()
     return render(request, 'notes/dashboard.html', {
         'subjects': subjects,
         'form': form
@@ -101,6 +119,7 @@ def subject_notepad(request, subject_id):
 def delete_subject(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id, user=request.user)
     subject.delete()
+    return redirect('dashboard')
 
 @login_required
 def subject_images(request, subject_id):
